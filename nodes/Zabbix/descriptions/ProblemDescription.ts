@@ -3,7 +3,7 @@ import {
 } from 'n8n-workflow';
 
 import {
-	getCommonGetParameters,
+	getCommonGetParameters, selectAcknowledgesQuery, selectSuppressionDataQuery, selectTagsQuery,
 } from './shared';
 
 export const problemOperations = [
@@ -72,8 +72,8 @@ export const problemFields = [
 		default: '',
 	},
 	{
-		displayName: 'Query Parameters JSON',
-		name: 'queryParametersJson',
+		displayName: 'Parameters JSON',
+		name: 'parametersJson',
 		type: 'json',
 		displayOptions: {
 			show: {
@@ -92,8 +92,8 @@ export const problemFields = [
 		description: 'Parameters as JSON (flat object) or JSON string.',
 	},
 	{
-		displayName: 'Query Parameters',
-		name: 'queryParametersUi',
+		displayName: 'Parameters',
+		name: 'parametersUi',
 		placeholder: 'Add Parameter',
 		type: 'collection',
 		displayOptions: {
@@ -259,7 +259,7 @@ export const problemFields = [
 				displayName: 'Acknowledged',
 				name: 'acknowledged',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'If true, return acknowledged problems only. If false, return unacknowledged only.',
 			},
             {
@@ -285,8 +285,8 @@ export const problemFields = [
 						displayName: 'Severity Number',
 						name: 'severityNumber',
 						type: 'number',
-						default: '',
-						description: 'ID of the trigger.',
+						default: 0,
+						description: 'Number of the severity.',
 					},
 				],
 			},
@@ -316,7 +316,7 @@ export const problemFields = [
 				},
 				placeholder: 'Add Tag',
 				default: {},
-				description: 'Return only problems with given tags. Exact match by tag and case-insensitive search by value and operator.',
+				description: 'Return only problems with given Acknowledged. Exact match by tag and case-insensitive search by value and operator.',
 				options: [
 					{
 						displayName: 'Tags',
@@ -393,71 +393,11 @@ export const problemFields = [
 				description: 'Return only problems that have been created before or at the given time. The format is Unix timestamp.',
 			},
 
+			...selectAcknowledgesQuery,
+			...selectTagsQuery,
+			...selectSuppressionDataQuery,
 
-
-			{
-				displayName: 'Select Acknowledges',
-				name: 'selectAcknowledges',
-				type: 'boolean',
-				default: false,
-				description: 'Return an acknowledges property with the problem updates. Problem updates are sorted in reverse chronological order.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Tags',
-				name: 'selectTags',
-				type: 'boolean',
-				default: false,
-				description: 'Return a tags property with the problem tags Output format: [{"tag": "<tag>", "value": "<value>"}, ...].',
-			}, // TODO: type query
-			{
-				displayName: 'Select Suppression Data',
-				name: 'selectSuppressionData',
-				type: 'boolean',
-				default: false,
-				description: 'Return a suppression_data property with the list of maintenances: maintenanceid - (string) ID of the maintenance; suppress_until - (integer) time until the problem is suppressed.',
-			}, // TODO: type query
-
-			// options: [
-			// 		{
-			// 			displayName: 'Tags',
-			// 			name: 'tags',
-			// 			values: [
-			// 				{
-			// 					displayName: 'Tag',
-			// 					name: 'tag',
-			// 					type: 'string',
-			// 					default: '',
-			// 					description: 'Tag name.',
-			// 				},
-			// 				{
-			// 					displayName: 'Value',
-			// 					name: 'value',
-			// 					type: 'string',
-			// 					default: '',
-			// 					description: 'Search value.',
-			// 				},
-			// 				{
-			// 					displayName: 'Operator',
-			// 					name: 'operator',
-			// 					type: 'options',
-			// 					default: 0,
-			// 					description: 'Search operator.',
-			// 					options: [
-			// 						{
-			// 							name: '0 - (default) Like',
-			// 							value: 0,
-			// 						},
-			// 						{
-			// 							name: '1 - Equal',
-			// 							value: 1,
-			// 						},
-			// 					]
-			// 				},
-			// 			]
-			// 		}
-			// 	],
-
-			getCommonGetParameters('problem'),
+			...getCommonGetParameters('problem'),
 		],
 	},
 

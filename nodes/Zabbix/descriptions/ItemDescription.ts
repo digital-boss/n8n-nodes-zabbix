@@ -4,6 +4,13 @@ import {
 
 import {
 	getCommonGetParameters,
+	limitSelects,
+	selectApplicationsQuery,
+	selectDiscoveryRuleQuery,
+	selectGraphsQuery,
+	selectHostsQuery,
+	selectInterfacesQuery,
+	selectTriggersQuery,
 } from './shared';
 
 export const itemOperations = [
@@ -50,499 +57,488 @@ export const itemFields = [
 	/*-------------------------------------------------------------------------- */
 	/*                                item:create                             	 */
 	/* ------------------------------------------------------------------------- */
-	{
-		displayName: 'See <a href="https://www.zabbix.com/documentation/5.0/en/manual/config/items/item/custom_intervals" target="_blank">Zabbix documentation</a> on custom intervals',
-		name: 'jsonNotice',
-		type: 'notice',
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-	},
-	{
-		displayName: 'Delay',
-		name: 'delay',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'Update interval of the item. Accepts seconds or a time unit with suffix (30s,1m,2h,1d). Optionally one or more custom intervals can be specified either as flexible intervals or scheduling. Multiple intervals are separated by a semicolon.',
-	},
-	{
-		displayName: 'Host ID',
-		name: 'hostid',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'ID of the host or template that the item belongs to. For update operations this field is readonly.',
-	},
-	{
-		displayName: 'Interface ID',
-		name: 'interfaceid',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'ID of the item\'s host interface. Not required for template items. Optional for internal, active agent, trapper, aggregate, calculated, dependent and database monitor items.',
-	},
-	{
-		displayName: 'Key',
-		name: 'key_',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'Item key.',
-	},
-	{
-		displayName: 'Name',
-		name: 'name',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'Name of the item.',
-	},
-	{
-		displayName: 'Type',
-		name: 'type',
-		type: 'options',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: 0,
-		description: 'Type of the item.',
-		options: [
-			{
-				name: '0 - Zabbix agent',
-				value: 0,
-			},
-			{
-				name: '2 - Zabbix trapper',
-				value: 2,
-			},
-			{
-				name: '3 - Simple check',
-				value: 3,
-			},
-			{
-				name: '5 - Zabbix internal',
-				value: 5,
-			},
-			{
-				name: '7 - Zabbix agent (active)',
-				value: 7,
-			},
-			{
-				name: '8 - Zabbix aggregate',
-				value: 8,
-			},
-			{
-				name: '9 - Web item',
-				value: 9,
-			},
-			{
-				name: '10 - External check',
-				value: 10,
-			},
-			{
-				name: '11 - Database monitor',
-				value: 11,
-			},
-			{
-				name: '12 - IPMI agent',
-				value: 12,
-			},
-			{
-				name: '13 - SSH agent',
-				value: 13,
-			},
-			{
-				name: '14 - Telnet agent',
-				value: 14,
-			},
-			{
-				name: '15 - Calculated',
-				value: 15,
-			},
-			{
-				name: '16 - JMX agent',
-				value: 16,
-			},
-			{
-				name: '17 - SNMP trap',
-				value: 17,
-			},
-			{
-				name: '18 - Dependent item',
-				value: 18,
-			},
-			{
-				name: '19 - HTTP agent',
-				value: 19,
-			},
-			{
-				name: '20 - SNMP agent',
-				value: 20,
-			},
-		],
-	},
-	{
-		displayName: 'URL',
-		name: 'url',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'URL string, required only for HTTP agent item type. Supports user macros, {HOST.IP}, {HOST.CONN}, {HOST.DNS}, {HOST.HOST}, {HOST.NAME}, {ITEM.ID}, {ITEM.KEY}.',
-	},
-	{
-		displayName: 'Value Type',
-		name: 'value_type',
-		type: 'string',
-		required: true,
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		default: '',
-		description: 'Type of information of the item.',
-	},
-
-	// Query Parameters
-	{
-		displayName: 'Query Parameters',
-		name: 'queryParameters',
-		type: 'collection',
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'create',
-				],
-			},
-		},
-		placeholder: 'Add Parameter',
-		default: {},
-		description: 'Additional parameters which are not required.',
-		options: [
-			{
-				displayName: 'Auth Type',
-				name: 'authtype',
-				type: 'options',
-				default: 0,
-				description: 'Used only by SSH agent items or HTTP agent items.',
-				options: [
-					{
-						name: '0 - (default) password for SHH / (default) none for HTTP',
-						value: 0,
-					},
-					{
-						name: '1 - public key for SHH / basic for HTTP',
-						value: 1,
-					},
-					{
-						name: '2 - NTLM for HTTP',
-						value: 2,
-					},
-					{
-						name: '3 - Kerberos for HTTP',
-						value: 3,
-					},
-				],
-			},
-			{
-				displayName: 'Description',
-				name: 'description',
-				type: 'string',
-				default: '',
-				description: 'Description of the item.',
-			},
-
-			{
-				displayName: 'Follow Redirects',
-				name: 'follow_redirects',
-				type: 'boolean',
-				default: true,
-				description: 'HTTP agent item field. Follow response redirects while pooling data.',
-			},
-			{
-				displayName: 'Headers',
-				name: 'headers',
-				type: 'fixedCollection',
-				typeOptions: {
-					multipleValues: true,
-				},
-				placeholder: 'Add Header',
-				default: { header: [] },
-				description: 'HTTP agent item field. Object with HTTP(S) request headers, where header name is used as key and header value as value.',
-				options: [
-					{
-						displayName: 'Header',
-						name: 'header',
-						values: [
-							{
-								displayName: 'Key',
-								name: 'key',
-								type: 'string',
-								default: '',
-								description: 'A header key.',
-							},
-							{
-								displayName: 'Value',
-								name: 'value',
-								type: 'string',
-								default: '',
-								description: 'A header value.',
-							},
-						],
-					},
-				],
-			},
-			{
-				displayName: 'History',
-				name: 'history',
-				type: 'string',
-				default: '90d',
-				description: 'A time unit of how long the history data should be stored. Also accepts user macro. Default: 90d.',
-			},
-			{
-				displayName: 'Http Proxy',
-				name: 'http_proxy',
-				type: 'string',
-				default: '',
-				description: 'HTTP agent item field. HTTP(S) proxy connection string.',
-			},
-			{
-				displayName: 'Inventory Link',
-				name: 'inventory_link',
-				type: 'number',
-				default: 0,
-				description: 'ID of the host inventory field that is populated by the item. Refer to the host inventory page for a list of supported host inventory fields and their IDs. Default: 0.',
-			},
-			{
-				displayName: 'Ipmi Sensor',
-				name: 'ipmi_sensor',
-				type: 'string',
-				default: '',
-				description: 'IPMI sensor. Used only by IPMI items.',
-			},
-			{
-				displayName: 'JMX Endpoint',
-				name: 'jmx_endpoint',
-				type: 'string',
-				default: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi',
-				description: 'JMX agent custom connection string. Default value: service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi',
-			},
-			{
-				displayName: 'Log Time Format',
-				name: 'logtimefmt',
-				type: 'string',
-				default: '',
-				description: 'Format of the time in log entries. Used only by log items.',
-			},
-			{
-				displayName: 'Master Item ID',
-				name: 'master_itemid',
-				type: 'number',
-				default: '',
-				description: 'Master item ID. Recursion up to 3 dependent items and maximum count of dependent items equal to 29999 are allowed. Required by dependent items.',
-			},
-			{
-				displayName: 'Output Format',
-				name: 'output_format',
-				type: 'boolean',
-				default: false,
-				description: 'HTTP agent item field. Should the response be converted to JSON.',
-			},
-			{
-				displayName: 'Params',
-				name: 'params',
-				type: 'string',
-				default: '',
-				description: 'Additional parameters depending on the type of the item:\n' +
-					'- executed script for SSH and Telnet items;\n' +
-					'- SQL query for database monitor items;\n' +
-					'- formula for calculated items.',
-			},
-			{
-				displayName: 'Password',
-				name: 'password',
-				type: 'string',
-				typeOptions: {
-					password: true,
-				},
-				default: '',
-				description: 'Password for authentication. Used by simple check, SSH, Telnet, database monitor, JMX and HTTP agent items.\n' +
-					'When used by JMX, username should also be specified together with password or both properties should be left blank.',
-			},
-			{
-				displayName: 'Post Type',
-				name: 'post_type',
-				type: 'options',
-				default: 0,
-				description: 'HTTP agent item field. Type of post data body stored in posts property.',
-				options: [
-					{
-						name: '0 - (default) Raw data',
-						value: 0,
-					},
-					{
-						name: '2 - JSON data',
-						value: 2,
-					},
-					{
-						name: '3 - XML data',
-						value: 3,
-					},
-				],
-			},
-			{
-				displayName: 'Posts',
-				name: 'posts',
-				type: 'string',
-				default: '',
-				description: 'HTTP agent item field. HTTP(S) request body data. Used with post_type.',
-			},
-			{
-				displayName: 'Private Key',
-				name: 'privatekey',
-				type: 'string',
-				default: '',
-				description: 'Name of the private key file.',
-			},
-			{
-				displayName: 'Public Key',
-				name: 'publickey',
-				type: 'string',
-				default: '',
-				description: 'Name of the public key file.',
-			},
-
-			//...........
-
-		],
-	},
+	// {
+	// 	displayName: 'See <a href="https://www.zabbix.com/documentation/5.0/en/manual/config/items/item/custom_intervals" target="_blank">Zabbix documentation</a> on custom intervals',
+	// 	name: 'jsonNotice',
+	// 	type: 'notice',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// },
+	// {
+	// 	displayName: 'Delay',
+	// 	name: 'delay',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'Update interval of the item. Accepts seconds or a time unit with suffix (30s,1m,2h,1d). Optionally one or more custom intervals can be specified either as flexible intervals or scheduling. Multiple intervals are separated by a semicolon.',
+	// },
+	// {
+	// 	displayName: 'Host ID',
+	// 	name: 'hostid',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'ID of the host or template that the item belongs to. For update operations this field is readonly.',
+	// },
+	// {
+	// 	displayName: 'Interface ID',
+	// 	name: 'interfaceid',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'ID of the item\'s host interface. Not required for template items. Optional for internal, active agent, trapper, aggregate, calculated, dependent and database monitor items.',
+	// },
+	// {
+	// 	displayName: 'Key',
+	// 	name: 'key_',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'Item key.',
+	// },
+	// {
+	// 	displayName: 'Name',
+	// 	name: 'name',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'Name of the item.',
+	// },
+	// {
+	// 	displayName: 'Type',
+	// 	name: 'type',
+	// 	type: 'options',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: 0,
+	// 	description: 'Type of the item.',
+	// 	options: [
+	// 		{
+	// 			name: '0 - Zabbix agent',
+	// 			value: 0,
+	// 		},
+	// 		{
+	// 			name: '2 - Zabbix trapper',
+	// 			value: 2,
+	// 		},
+	// 		{
+	// 			name: '3 - Simple check',
+	// 			value: 3,
+	// 		},
+	// 		{
+	// 			name: '5 - Zabbix internal',
+	// 			value: 5,
+	// 		},
+	// 		{
+	// 			name: '7 - Zabbix agent (active)',
+	// 			value: 7,
+	// 		},
+	// 		{
+	// 			name: '8 - Zabbix aggregate',
+	// 			value: 8,
+	// 		},
+	// 		{
+	// 			name: '9 - Web item',
+	// 			value: 9,
+	// 		},
+	// 		{
+	// 			name: '10 - External check',
+	// 			value: 10,
+	// 		},
+	// 		{
+	// 			name: '11 - Database monitor',
+	// 			value: 11,
+	// 		},
+	// 		{
+	// 			name: '12 - IPMI agent',
+	// 			value: 12,
+	// 		},
+	// 		{
+	// 			name: '13 - SSH agent',
+	// 			value: 13,
+	// 		},
+	// 		{
+	// 			name: '14 - Telnet agent',
+	// 			value: 14,
+	// 		},
+	// 		{
+	// 			name: '15 - Calculated',
+	// 			value: 15,
+	// 		},
+	// 		{
+	// 			name: '16 - JMX agent',
+	// 			value: 16,
+	// 		},
+	// 		{
+	// 			name: '17 - SNMP trap',
+	// 			value: 17,
+	// 		},
+	// 		{
+	// 			name: '18 - Dependent item',
+	// 			value: 18,
+	// 		},
+	// 		{
+	// 			name: '19 - HTTP agent',
+	// 			value: 19,
+	// 		},
+	// 		{
+	// 			name: '20 - SNMP agent',
+	// 			value: 20,
+	// 		},
+	// 	],
+	// },
+	// {
+	// 	displayName: 'Value Type',
+	// 	name: 'value_type',
+	// 	type: 'string',
+	// 	required: true,
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	default: '',
+	// 	description: 'Type of information of the item.',
+	// },
+	//
+	// // Parameters
+	// {
+	// 	displayName: 'Parameters',
+	// 	name: 'parameters',
+	// 	type: 'collection',
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'create',
+	// 			],
+	// 		},
+	// 	},
+	// 	placeholder: 'Add Parameter',
+	// 	default: {},
+	// 	description: 'Additional parameters which are not required.',
+	// 	options: [
+	// 		{
+	// 			displayName: 'URL',
+	// 			name: 'url',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'URL string, required only for HTTP agent item type. Supports user macros, {HOST.IP}, {HOST.CONN}, {HOST.DNS}, {HOST.HOST}, {HOST.NAME}, {ITEM.ID}, {ITEM.KEY}.',
+	// 		},
+	// 		{
+	// 			displayName: 'Auth Type',
+	// 			name: 'authtype',
+	// 			type: 'options',
+	// 			default: 0,
+	// 			description: 'Used only by SSH agent items or HTTP agent items.',
+	// 			options: [
+	// 				{
+	// 					name: '0 - (default) password for SHH / (default) none for HTTP',
+	// 					value: 0,
+	// 				},
+	// 				{
+	// 					name: '1 - public key for SHH / basic for HTTP',
+	// 					value: 1,
+	// 				},
+	// 				{
+	// 					name: '2 - NTLM for HTTP',
+	// 					value: 2,
+	// 				},
+	// 				{
+	// 					name: '3 - Kerberos for HTTP',
+	// 					value: 3,
+	// 				},
+	// 			],
+	// 		},
+	// 		{
+	// 			displayName: 'Description',
+	// 			name: 'description',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Description of the item.',
+	// 		},
+	//
+	// 		{
+	// 			displayName: 'Follow Redirects',
+	// 			name: 'follow_redirects',
+	// 			type: 'boolean',
+	// 			default: false,
+	// 			description: 'HTTP agent item field. Follow response redirects while pooling data.',
+	// 		},
+	// 		{
+	// 			displayName: 'Headers',
+	// 			name: 'headers',
+	// 			type: 'fixedCollection',
+	// 			typeOptions: {
+	// 				multipleValues: true,
+	// 			},
+	// 			placeholder: 'Add Header',
+	// 			default: { header: [] },
+	// 			description: 'HTTP agent item field. Object with HTTP(S) request headers, where header name is used as key and header value as value.',
+	// 			options: [
+	// 				{
+	// 					displayName: 'Header',
+	// 					name: 'header',
+	// 					values: [
+	// 						{
+	// 							displayName: 'Key',
+	// 							name: 'key',
+	// 							type: 'string',
+	// 							default: '',
+	// 							description: 'A header key.',
+	// 						},
+	// 						{
+	// 							displayName: 'Value',
+	// 							name: 'value',
+	// 							type: 'string',
+	// 							default: '',
+	// 							description: 'A header value.',
+	// 						},
+	// 					],
+	// 				},
+	// 			],
+	// 		},
+	// 		{
+	// 			displayName: 'History',
+	// 			name: 'history',
+	// 			type: 'string',
+	// 			default: '90d',
+	// 			description: 'A time unit of how long the history data should be stored. Also accepts user macro. Default: 90d.',
+	// 		},
+	// 		{
+	// 			displayName: 'Http Proxy',
+	// 			name: 'http_proxy',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'HTTP agent item field. HTTP(S) proxy connection string.',
+	// 		},
+	// 		{
+	// 			displayName: 'Inventory Link',
+	// 			name: 'inventory_link',
+	// 			type: 'number',
+	// 			default: 0,
+	// 			description: 'ID of the host inventory field that is populated by the item. Refer to the host inventory page for a list of supported host inventory fields and their IDs. Default: 0.',
+	// 		},
+	// 		{
+	// 			displayName: 'Ipmi Sensor',
+	// 			name: 'ipmi_sensor',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'IPMI sensor. Used only by IPMI items.',
+	// 		},
+	// 		{
+	// 			displayName: 'JMX Endpoint',
+	// 			name: 'jmx_endpoint',
+	// 			type: 'string',
+	// 			default: 'service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi',
+	// 			description: 'JMX agent custom connection string. Default value: service:jmx:rmi:///jndi/rmi://{HOST.CONN}:{HOST.PORT}/jmxrmi',
+	// 		},
+	// 		{
+	// 			displayName: 'Log Time Format',
+	// 			name: 'logtimefmt',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Format of the time in log entries. Used only by log items.',
+	// 		},
+	// 		{
+	// 			displayName: 'Master Item ID',
+	// 			name: 'master_itemid',
+	// 			type: 'number',
+	// 			default: '',
+	// 			description: 'Master item ID. Recursion up to 3 dependent items and maximum count of dependent items equal to 29999 are allowed. Required by dependent items.',
+	// 		},
+	// 		{
+	// 			displayName: 'Output Format',
+	// 			name: 'output_format',
+	// 			type: 'boolean',
+	// 			default: false,
+	// 			description: 'HTTP agent item field. Should the response be converted to JSON.',
+	// 		},
+	// 		{
+	// 			displayName: 'Params',
+	// 			name: 'params',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Additional parameters depending on the type of the item:\n' +
+	// 				'- executed script for SSH and Telnet items;\n' +
+	// 				'- SQL query for database monitor items;\n' +
+	// 				'- formula for calculated items.',
+	// 		},
+	// 		{
+	// 			displayName: 'Password',
+	// 			name: 'password',
+	// 			type: 'string',
+	// 			typeOptions: {
+	// 				password: true,
+	// 			},
+	// 			default: '',
+	// 			description: 'Password for authentication. Used by simple check, SSH, Telnet, database monitor, JMX and HTTP agent items.\n' +
+	// 				'When used by JMX, username should also be specified together with password or both properties should be left blank.',
+	// 		},
+	// 		{
+	// 			displayName: 'Post Type',
+	// 			name: 'post_type',
+	// 			type: 'options',
+	// 			default: 0,
+	// 			description: 'HTTP agent item field. Type of post data body stored in posts property.',
+	// 			options: [
+	// 				{
+	// 					name: '0 - (default) Raw data',
+	// 					value: 0,
+	// 				},
+	// 				{
+	// 					name: '2 - JSON data',
+	// 					value: 2,
+	// 				},
+	// 				{
+	// 					name: '3 - XML data',
+	// 					value: 3,
+	// 				},
+	// 			],
+	// 		},
+	// 		{
+	// 			displayName: 'Posts',
+	// 			name: 'posts',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'HTTP agent item field. HTTP(S) request body data. Used with post_type.',
+	// 		},
+	// 		{
+	// 			displayName: 'Private Key',
+	// 			name: 'privatekey',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Name of the private key file.',
+	// 		},
+	// 		{
+	// 			displayName: 'Public Key',
+	// 			name: 'publickey',
+	// 			type: 'string',
+	// 			default: '',
+	// 			description: 'Name of the public key file.',
+	// 		},
+	//
+	// 		//...........
+	//
+	// 	],
+	// },
 
 	/*-------------------------------------------------------------------------- */
 	/*                                item:delete                             	 */
 	/* ------------------------------------------------------------------------- */
 
-	{
-		displayName: 'Query Parameters',
-		name: 'queryParameters',
-		type: 'fixedCollection',
-		typeOptions: {
-			multipleValues: true,
-		},
-		displayOptions: {
-			show: {
-				resource: [
-					'item',
-				],
-				operation: [
-					'delete',
-				],
-			},
-		},
-		placeholder: 'Add Item',
-		default: {},
-		description: 'IDs of the items to delete.',
-		options: [
-			{
-				displayName: 'Items',
-				name: 'items',
-				values: [
-					{
-						displayName: 'Item ID',
-						name: 'id',
-						type: 'string',
-						default: '',
-						description: 'ID of the item to delete.',
-					},
-				],
-			},
-
-		],
-	},
+	// {
+	// 	displayName: 'Parameters',
+	// 	name: 'parameters',
+	// 	type: 'fixedCollection',
+	// 	typeOptions: {
+	// 		multipleValues: true,
+	// 	},
+	// 	displayOptions: {
+	// 		show: {
+	// 			resource: [
+	// 				'item',
+	// 			],
+	// 			operation: [
+	// 				'delete',
+	// 			],
+	// 		},
+	// 	},
+	// 	placeholder: 'Add Item',
+	// 	default: {},
+	// 	description: 'IDs of the items to delete.',
+	// 	options: [
+	// 		{
+	// 			displayName: 'Items',
+	// 			name: 'items',
+	// 			values: [
+	// 				{
+	// 					displayName: 'Item ID',
+	// 					name: 'id',
+	// 					type: 'string',
+	// 					default: '',
+	// 					description: 'ID of the item to delete.',
+	// 				},
+	// 			],
+	// 		},
+	//
+	// 	],
+	// },
 
 	/*-------------------------------------------------------------------------- */
 	/*                                item:get	                             	 */
@@ -584,8 +580,8 @@ export const itemFields = [
 		default: '',
 	},
 	{
-		displayName: 'Query Parameters JSON',
-		name: 'queryParametersJson',
+		displayName: 'Parameters JSON',
+		name: 'parametersJson',
 		type: 'json',
 		displayOptions: {
 			show: {
@@ -604,8 +600,8 @@ export const itemFields = [
 		description: 'Parameters as JSON (flat object) or JSON string.',
 	},
 	{
-		displayName: 'Query Parameters',
-		name: 'queryParametersUi',
+		displayName: 'Parameters',
+		name: 'parametersUi',
 		type: 'collection',
 		displayOptions: {
 			show: {
@@ -817,28 +813,28 @@ export const itemFields = [
 				displayName: 'Web Items',
 				name: 'webitems',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'Include web items in the result.',
 			},
 			{
 				displayName: 'Inherited',
 				name: 'inherited',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'If set to true return only items inherited from a template.',
 			},
 			{
 				displayName: 'Templated',
 				name: 'templated',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'If set to true return only items that belong to templates.',
 			},
 			{
 				displayName: 'Monitored',
 				name: 'monitored',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'If set to true return only enabled items that belong to monitored hosts.',
 			},
 			{
@@ -866,15 +862,23 @@ export const itemFields = [
 				displayName: 'With Triggers',
 				name: 'with_triggers',
 				type: 'boolean',
-				default: true,
+				default: false,
 				description: 'If set to true return only items that are used in triggers.',
 			},
-			{
-				displayName: 'Select Hosts',
-				name: 'selectHosts',
-				type: 'options',
+
+			...selectHostsQuery,
+			...selectInterfacesQuery,
+			...selectTriggersQuery,
+			...selectGraphsQuery,
+			...selectApplicationsQuery,
+			...selectDiscoveryRuleQuery,
+
+			 {
+				displayName: 'Select Item Discovery',
+				name: 'selectItemDiscoveryOptions',
+				type: 'options', // type - query
 				default: 'extend',
-				description: 'Return a hosts property with an array of hosts that the item belongs to.',
+				description: 'Return an itemDiscovery property with the item discovery object.',
 				options: [
 					{
 						name: 'Extend',
@@ -882,131 +886,54 @@ export const itemFields = [
 						description: 'Returns all object properties',
 					},
 					{
-						name: 'Count',
-						value: 'count',
-						description: 'Returns the number of retrieved records, supported only by certain subselects',
-					},
-					{
 						name: 'Property Names',
 						value: 'propertyNames',
-						description: 'Array of property names to return only specific properties',
+						description: 'Return only specific properties (add parameter Discovery Rule Property Names)',
 					},
 				],
 			},
 			{
-				displayName: 'Select Hosts Property Names',
-				name: 'selectHostsPropertyNames',
-				type: 'collection',
-				typeOptions: {
-					multipleValues: true,
-					multipleValueButtonText: 'Add Host',
+				displayName: 'Item Discovery Property Names',
+				name: 'itemDiscoveryPropertyNames',
+				type: 'multiOptions',
+				displayOptions: {
+					show: {
+						selectItemDiscoveryOptions: [
+							'propertyNames',
+						],
+					},
 				},
-				// displayOptions: {
-				// 	show: {
-				// 		selectHosts: [
-				// 			'propertyNames',
-				// 		],
-				// 	},
-				// },
-				default: {},
-				placeholder: 'Add Host Value',
-				description: '',
+				default: [],
+				description: 'Choose which properties to return.',
 				options: [
 					{
-						displayName: 'Value',
-						name: 'value',
-						type: 'string',
-						default: '',
-						description: 'The property name to return.',
-					},
-				],
-			}, // TODO: type query
-
-
-
-			{
-				displayName: 'Select Interfaces',
-				name: 'selectInterfaces',
-				type: 'boolean',
-				default: true,
-				description: 'Return an interfaces property with an array of host interfaces used by the item.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Triggers',
-				name: 'selectTriggers',
-				type: 'boolean',
-				default: true,
-				description: 'Return a triggers property with the triggers that the item is used in. Supports count.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Graphs',
-				name: 'selectGraphs',
-				type: 'boolean',
-				default: true,
-				description: 'Return a graphs property with the graphs that contain the item. Supports count.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Applications',
-				name: 'selectApplications',
-				type: 'boolean',
-				default: true,
-				description: 'Return an applications property with the applications that the item belongs to.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Discovery Rule',
-				name: 'selectDiscoveryRule',
-				type: 'boolean',
-				default: true,
-				description: 'Return a discoveryRule property with the LLD rule that created the item.',
-			}, // TODO: type query
-			{
-				displayName: 'Select Item Discovery',
-				name: 'selectItemDiscovery',
-				placeholder: 'Add Application IDs',
-				type: 'collection',
-				default: {},
-				description: 'Return only items that belong to the given applications.',
-				options: [
-					{
-						displayName: 'Item Discovery ID',
-						name: 'itemdiscoveryid',
-						type: 'string',
-						default: '',
-						description: 'ID of the item discovery.',
+						name: 'Item Discovery ID',
+						value: 'itemdiscoveryid',
+						description: 'ID of the item discovery',
 					},
 					{
-						displayName: 'Item ID',
-						name: 'itemid',
-						type: 'string',
-						default: '',
-						description: 'ID of the discovered item.',
+						name: 'Item ID',
+						value: 'itemid',
+						description: 'ID of the discovered item',
 					},
 					{
-						displayName: 'Parent Item ID',
-						name: 'parent_itemid',
-						type: 'string',
-						default: '',
+						name: 'Parent Item ID',
+						value: 'parent_itemid',
 						description: 'ID of the item prototype from which the item has been created.',
 					},
 					{
-						displayName: 'Key',
-						name: 'key_',
-						type: 'string',
-						default: '',
-						description: 'Key of the item prototype.',
+						name: 'Key',
+						value: 'key_',
+						description: 'Key of the item prototype',
 					},
 					{
-						displayName: 'Last Check',
-						name: 'lastcheck',
-						type: 'string',
-						default: '',
+						name: 'Last Check',
+						value: 'lastcheck',
 						description: 'Time when the item was last discovered. The format is Unix timestamp.',
 					},
 					{
-						displayName: 'Last Check',
-						name: 'ts_delete',
-						type: 'string',
-						default: '',
+						name: 'Last Check',
+						value: 'ts_delete',
 						description: 'Time when an item that is no longer discovered will be deleted. The format is Unix timestamp.',
 					},
 				],
@@ -1132,9 +1059,6 @@ export const itemFields = [
 						displayName: 'Params',
 						name: 'params',
 						type: 'string',
-						typeOptions: {
-							alwaysOpenEditWindow: true,
-						},
 						default: '',
 						description: 'Additional parameters used by preprocessing option. Multiple parameters are separated by LF (\\n)character.',
 					},
@@ -1173,19 +1097,9 @@ export const itemFields = [
 				],
 			},
 
-			{
-				displayName: 'Limit Selects',
-				name: 'limitSelects',
-				type: 'number',
-				typeOptions: {
-					minValue: 1,
-					numberStepSize: 1,
-				},
-				default: '',
-				description: 'Limits the number of records returned by subselects. Applies to the following subselects: selectGraphs - results will be sorted by name; selectTriggers - results will be sorted by description.',
-			},
+			...limitSelects,
 
-			getCommonGetParameters('item'),
+			...getCommonGetParameters('item'),
 		],
 	},
 
@@ -1193,8 +1107,8 @@ export const itemFields = [
 	/*                                item:update	                             */
 	/* ------------------------------------------------------------------------- */
 	// {
-	// 	displayName: 'Query Parameters',
-	// 	name: 'queryParametersJson',
+	// 	displayName: 'Parameters JSON',
+	// 	name: 'ParametersJson',
 	// 	type: 'json',
 	// 	displayOptions: {
 	// 		show: {
@@ -1210,11 +1124,11 @@ export const itemFields = [
 	// 		},
 	// 	},
 	// 	default: '',
-	// 	description: 'Query parameters as JSON (flat object).',
+	// 	description: 'Parameters as JSON (flat object).',
 	// },
 	// {
-	// 	displayName: 'Query Parameters',
-	// 	name: 'queryParametersUi',
+	// 	displayName: 'Parameters',
+	// 	name: 'parametersUi',
 	// 	placeholder: 'Add Parameter',
 	// 	type: 'fixedCollection',
 	// 	typeOptions: {

@@ -148,12 +148,19 @@ export function simplify(responseData: IDataObject): IDataObject {
  * @param Array<{key:string,value:string}> data
  * @returns IDataObject
  */
-export function parseArrayToObject(data: Array<{name:string,value:string}>): IDataObject {
+export function parseArrayToObject(data: Array<{key:string,values:string|number|IDataObject[]}>): IDataObject {
 	const jsonData: IDataObject = {};
 	if(data) {
 		for (let i = 0; i < data.length; i++) {
-			if (data[i].name && data[i].value) {
-				jsonData[data[i].name] = data[i].value;
+			if (data[i].key && data[i].values) {
+				// if key and value exist
+				if (Object.prototype.toString.call(data[i].values) === '[object Array]') {
+					// if values is an array assign the key to values.value[]
+					jsonData[data[i].key] = (data[i].values as IDataObject[]).map(a => a.value);
+				} else {
+					// if values is a string or number assign the key to values
+					jsonData[data[i].key] = data[i].values;
+				}
 			}
 		}
 	}

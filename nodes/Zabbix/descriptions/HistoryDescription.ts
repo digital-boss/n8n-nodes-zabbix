@@ -72,8 +72,8 @@ export const historyFields = [
 		default: '',
 	},
 	{
-		displayName: 'Query Parameters JSON',
-		name: 'queryParametersJson',
+		displayName: 'Parameters JSON',
+		name: 'parametersJson',
 		type: 'json',
 		displayOptions: {
 			show: {
@@ -92,8 +92,8 @@ export const historyFields = [
 		description: 'Parameters as JSON (flat object) or JSON string.',
 	},
 	{
-		displayName: 'Query Parameters',
-		name: 'queryParametersUi',
+		displayName: 'Parameters',
+		name: 'parametersUi',
 		placeholder: 'Add Parameter',
 		type: 'collection',
 		displayOptions: {
@@ -198,7 +198,7 @@ export const historyFields = [
 				description: 'Return only values that have been received before or at the given time. The format is Unix timestamp.',
 			},
 
-			getCommonGetParameters('history'),
+			...getCommonGetParameters('history'),
 		],
 	},
 
