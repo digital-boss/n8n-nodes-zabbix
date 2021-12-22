@@ -138,7 +138,15 @@ export function validateJSON(json: string | undefined): any { // tslint:disable-
  * @returns IDataObject
  */
 export function simplify(responseData: IDataObject): IDataObject {
+	if(Object.entries(responseData.result as IDataObject).length === 0) {
+		// if responseData.result is empty
+		return {
+			message: 'Success. No data got returned.'
+		};
+	} else {
 		return responseData.result as IDataObject;
+	}
+
 }
 
 /**

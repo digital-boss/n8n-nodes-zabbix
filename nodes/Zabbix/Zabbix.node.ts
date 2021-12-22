@@ -108,7 +108,7 @@ export class Zabbix implements INodeType {
 						value: 'problem',
 					},
 				],
-				default: 'item',
+				default: 'host',
 				required: true,
 				description: 'Resource to consume',
 			},
