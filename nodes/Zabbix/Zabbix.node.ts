@@ -155,7 +155,7 @@ export class Zabbix implements INodeType {
 								if (validateJSON(parametersJson as string) !== undefined) {
 									params = JSON.parse(parametersJson as string) as IDataObject;
 								} else {
-									throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+									throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
 								}
 							}
 							
@@ -225,7 +225,7 @@ export class Zabbix implements INodeType {
 								if (validateJSON(parametersJson as string) !== undefined) {
 									params = JSON.parse(parametersJson as string) as IDataObject;
 								} else {
-									throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+									throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
 								}
 							}
 
@@ -531,7 +531,7 @@ export class Zabbix implements INodeType {
 								if (validateJSON(parametersJson as string) !== undefined) {
 									params = JSON.parse(parametersJson as string) as IDataObject;
 								} else {
-									throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+									throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
 								}
 							}
 
@@ -728,7 +728,7 @@ export class Zabbix implements INodeType {
 								if (validateJSON(parametersJson as string) !== undefined) {
 									params = JSON.parse(parametersJson as string) as IDataObject;
 								} else {
-									throw new NodeOperationError(this.getNode(), 'Message (JSON) must be a valid json');
+									throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
 								}
 							}
 

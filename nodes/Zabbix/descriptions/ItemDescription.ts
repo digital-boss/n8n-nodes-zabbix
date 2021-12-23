@@ -5,6 +5,7 @@ import {
 import {
 	getCommonGetParameters,
 	limitSelects,
+	preserveKeys,
 	selectApplicationsQuery,
 	selectDiscoveryRuleQuery,
 	selectGraphsQuery,
@@ -1100,6 +1101,7 @@ export const itemFields = [
 			...limitSelects,
 
 			...getCommonGetParameters('item'),
+			...preserveKeys,
 		],
 	},
 

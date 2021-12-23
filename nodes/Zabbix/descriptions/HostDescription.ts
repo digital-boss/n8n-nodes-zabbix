@@ -5,6 +5,7 @@ import {
 import {
 	getCommonGetParameters,
 	limitSelects,
+	preserveKeys,
 	searchInventory,
 	selectApplicationsQuery,
 	selectDiscoveriesQuery,
@@ -640,6 +641,7 @@ export const hostFields = [
 			...searchInventory,
 
 			...getCommonGetParameters('host'),
+			...preserveKeys,
 		],
 	},
 

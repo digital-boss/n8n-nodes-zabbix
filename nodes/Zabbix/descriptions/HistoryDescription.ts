@@ -186,15 +186,15 @@ export const historyFields = [
             {
 				displayName: 'Time From',
 				name: 'time_from',
-				type: 'string',
-				default: '',
+				type: 'number',
+				default: 0,
 				description: 'Return only values that have been received after or at the given time. The format is Unix timestamp.',
 			},
             {
 				displayName: 'Time Till',
 				name: 'time_till',
-				type: 'string',
-				default: '',
+				type: 'number',
+				default: 0,
 				description: 'Return only values that have been received before or at the given time. The format is Unix timestamp.',
 			},
 

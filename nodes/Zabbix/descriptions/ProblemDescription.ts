@@ -3,7 +3,11 @@ import {
 } from 'n8n-workflow';
 
 import {
-	getCommonGetParameters, selectAcknowledgesQuery, selectSuppressionDataQuery, selectTagsQuery,
+	getCommonGetParameters,
+	preserveKeys,
+	selectAcknowledgesQuery,
+	selectSuppressionDataQuery,
+	selectTagsQuery,
 } from './shared';
 
 export const problemOperations = [
@@ -381,15 +385,15 @@ export const problemFields = [
             {
 				displayName: 'Time From',
 				name: 'time_from',
-				type: 'string',
-				default: '',
+				type: 'number',
+				default: 0,
 				description: 'Return only problems that have been created after or at the given time. The format is Unix timestamp.',
 			},
             {
 				displayName: 'Time Till',
 				name: 'time_till',
-				type: 'string',
-				default: '',
+				type: 'number',
+				default: 0,
 				description: 'Return only problems that have been created before or at the given time. The format is Unix timestamp.',
 			},
 
@@ -398,6 +402,7 @@ export const problemFields = [
 			...selectSuppressionDataQuery,
 
 			...getCommonGetParameters('problem'),
+			...preserveKeys,
 		],
 	},
 

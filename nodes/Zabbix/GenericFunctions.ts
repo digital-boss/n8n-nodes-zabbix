@@ -34,7 +34,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 		const loginResponse = await login.call(this, credentials);
 
 		if (loginResponse.result === undefined) {
-			throw new NodeOperationError(this.getNode(), loginResponse.message as string);
+			throw new NodeOperationError(this.getNode(), "Login wasn't successful.");
 		}
 
 		token = loginResponse.result as string;
@@ -138,10 +138,10 @@ export function validateJSON(json: string | undefined): any { // tslint:disable-
  * @returns IDataObject
  */
 export function simplify(responseData: IDataObject): IDataObject {
-	if(Object.entries(responseData.result as IDataObject).length === 0) {
+	if(Object.keys(responseData.result as IDataObject).length === 0) {
 		// if responseData.result is empty
 		return {
-			message: 'Success. No data got returned.'
+			success: true,
 		};
 	} else {
 		return responseData.result as IDataObject;
