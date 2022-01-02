@@ -142,6 +142,7 @@ export function simplify(responseData: IDataObject): IDataObject {
 		// if responseData.result is empty
 		return {
 			success: true,
+			message:  "No records got returned."
 		};
 	} else {
 		return responseData.result as IDataObject;
