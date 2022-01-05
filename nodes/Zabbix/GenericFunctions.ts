@@ -23,6 +23,8 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 
 	let credentials: IDataObject;
 	let token: string;
+	const id = Math.floor(Math.random() * 100);
+
 	if (authenticationMethod === 'credentials') {
 		// Login with user and password
 		credentials = await this.getCredentials('zabbixApi') as ICredentialDataDecryptedObject;
@@ -31,7 +33,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 			throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
 		}
 
-		const loginResponse = await login.call(this, credentials);
+		const loginResponse = await login.call(this, credentials, id);
 
 		if (loginResponse.result === undefined) {
 			throw new NodeOperationError(this.getNode(), "Login wasn't successful.");
@@ -49,7 +51,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 		token = credentials.apiToken as string;
 	}
 
-	const options = getOptions(method, params, credentials, token, uri);
+	const options = getOptions(method, params, credentials, token, id, uri);
 
 	// tslint:disable-next-line:no-any
 	let responseData: Promise<any>;
@@ -61,7 +63,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 	}
 
 	if(authenticationMethod === 'credentials') {
-		const logoutResponse = await logout.call(this, credentials, token);
+		const logoutResponse = await logout.call(this, credentials, token, id);
 		if (logoutResponse.result === undefined && logoutResponse.result !== true) {
 			throw new NodeOperationError(this.getNode(), logoutResponse.message as string);
 		}
@@ -70,7 +72,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 	return responseData;
 }
 
-function getOptions(method: string, params: IDataObject, credentials: IDataObject, token: string|null = null, uri?: string) {
+function getOptions(method: string, params: IDataObject, credentials: IDataObject, token: string|null = null, id: number, uri?: string) {
 
 	const options: OptionsWithUri = {
 		method: 'POST',
@@ -81,7 +83,7 @@ function getOptions(method: string, params: IDataObject, credentials: IDataObjec
 			jsonrpc: "2.0",
 			method,
 			params,
-			id: 1,
+			id,
 			auth: token,
 		},
 		uri: uri || credentials.url + '/api_jsonrpc.php',
@@ -92,14 +94,14 @@ function getOptions(method: string, params: IDataObject, credentials: IDataObjec
 }
 
 function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	credentials: IDataObject): Promise<IDataObject> {
+	credentials: IDataObject, id: number): Promise<IDataObject> {
 
 	const params: IDataObject = {
 		user: credentials.user,
 		password: credentials.password,
 	};
 
-	const options = getOptions("user.login", params, credentials, null);
+	const options = getOptions("user.login", params, credentials, null, id);
 
 	try {
 		return this.helpers.request!(options);
@@ -109,9 +111,9 @@ function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunction
 }
 
 function logout(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	credentials: IDataObject, token: string): Promise<IDataObject> {
+	credentials: IDataObject, token: string, id: number): Promise<IDataObject> {
 
-	const options = getOptions("user.logout",{}, credentials, token);
+	const options = getOptions("user.logout",{}, credentials, token, id);
 
 	try {
 		return this.helpers.request!(options);
