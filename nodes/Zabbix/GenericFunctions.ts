@@ -25,51 +25,50 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 	let token: string;
 	const id = Math.floor(Math.random() * 100);
 
-	if (authenticationMethod === 'credentials') {
-		// Login with user and password
-		credentials = await this.getCredentials('zabbixApi') as ICredentialDataDecryptedObject;
-
-		if (credentials === undefined) {
-			throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
-		}
-
-		const loginResponse = await login.call(this, credentials, id);
-
-		if (loginResponse.result === undefined) {
-			throw new NodeOperationError(this.getNode(), "Login wasn't successful.");
-		}
-
-		token = loginResponse.result as string;
-	} else {
-		// Login with API token
-		credentials = await this.getCredentials('zabbixTokenApi') as ICredentialDataDecryptedObject;
-
-		if (credentials === undefined) {
-			throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
-		}
-
-		token = credentials.apiToken as string;
-	}
-
-	const options = getOptions(method, params, credentials, token, id, uri);
-
-	// tslint:disable-next-line:no-any
-	let responseData: Promise<any>;
 	try {
-		responseData = this.helpers.request!(options);
+		// Get access token
+		if (authenticationMethod === 'credentials') {
+			// Login with user and password
+			credentials = await this.getCredentials('zabbixApi') as ICredentialDataDecryptedObject;
+
+			if (credentials === undefined) {
+				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
+			}
+
+			const loginResponse = await login.call(this, credentials, id);
+
+			if (loginResponse.result === undefined) {
+				throw new NodeOperationError(this.getNode(), "Login wasn't successful.");
+			}
+
+			token = loginResponse.result as string;
+		} else {
+			// Login with API token
+			credentials = await this.getCredentials('zabbixTokenApi') as ICredentialDataDecryptedObject;
+
+			if (credentials === undefined) {
+				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
+			}
+
+			token = credentials.apiToken as string;
+		}
+
+		const options = getOptions(method, params, credentials, token, id, uri);
+
+		const responseData = await this.helpers.request!(options);
+
+		if(authenticationMethod === 'credentials') {
+			const logoutResponse = await logout.call(this, credentials, token, id);
+			if (logoutResponse.result === undefined && logoutResponse.result !== true) {
+				throw new NodeOperationError(this.getNode(), logoutResponse.message as string);
+			}
+		}
+
+		return responseData;
 
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
 	}
-
-	if(authenticationMethod === 'credentials') {
-		const logoutResponse = await logout.call(this, credentials, token, id);
-		if (logoutResponse.result === undefined && logoutResponse.result !== true) {
-			throw new NodeOperationError(this.getNode(), logoutResponse.message as string);
-		}
-	}
-
-	return responseData;
 }
 
 function getOptions(method: string, params: IDataObject, credentials: IDataObject, token: string|null = null, id: number, uri?: string) {
@@ -93,7 +92,7 @@ function getOptions(method: string, params: IDataObject, credentials: IDataObjec
 	return options;
 }
 
-function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
+async function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
 	credentials: IDataObject, id: number): Promise<IDataObject> {
 
 	const params: IDataObject = {
@@ -110,7 +109,7 @@ function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunction
 	}
 }
 
-function logout(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
+async function logout(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
 	credentials: IDataObject, token: string, id: number): Promise<IDataObject> {
 
 	const options = getOptions("user.logout",{}, credentials, token, id);
