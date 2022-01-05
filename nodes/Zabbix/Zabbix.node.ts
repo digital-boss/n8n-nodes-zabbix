@@ -11,6 +11,8 @@ import {
 } from 'n8n-workflow';
 
 import {
+	eventFields,
+	eventOperations,
 	historyFields,
 	historyOperations,
 	hostFields,
@@ -92,6 +94,10 @@ export class Zabbix implements INodeType {
 				type: 'options',
 				options: [
 					{
+						name: 'Event',
+						value: 'event',
+					},
+					{
 						name: 'History',
 						value: 'history',
 					},
@@ -112,6 +118,8 @@ export class Zabbix implements INodeType {
 				required: true,
 				description: 'Resource to consume',
 			},
+			...eventOperations,
+			...eventFields,
 			...historyOperations,
 			...historyFields,
 			...hostOperations,
@@ -132,14 +140,14 @@ export class Zabbix implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				if (resource === 'history') {
+				if (resource === 'event') {
 					if (operation === 'get') {
 
 						// ----------------------------------------
-						//             history: get
+						//             event: get
 						// ----------------------------------------
 
-						// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/history/get
+						// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/event/get
 
 						const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
@@ -159,6 +167,108 @@ export class Zabbix implements INodeType {
 								}
 							}
 							
+						} else {
+							params = this.getNodeParameter('parametersUi', i) as IDataObject;
+
+							if(params.eventids) {
+								// type - string/array
+								params.eventids = (params.eventids as IDataObject[]).map(a => a.id);
+							}
+							if(params.graphids) {
+								// type - string/array
+								params.graphids = (params.graphids as IDataObject[]).map(a => a.id);
+							}
+							if(params.hostids) {
+								// type - string/array
+								params.hostids = (params.hostids as IDataObject[]).map(a => a.id);
+							}
+							if(params.objectids) {
+								// type - string/array
+								params.objectids = (params.objectids as IDataObject[]).map(a => a.id);
+							}
+							if(params.severities) {
+								// type - integer/array
+								params.severities = (params.severities as IDataObject[]).map(a => a.severityNumber);
+							}
+							if(params.tags) {
+								// type - string/array
+								params.tags = (params.tags as IDataObject).tags;
+							}
+							if(params.value) {
+								// type - integer/array
+								params.value = (params.value as IDataObject).value;
+							}
+
+							if(params.selectHostsOptions) {
+								// type - query
+								if(params.selectHostsOptions === 'propertyNames') {
+									params.selectHosts = params.hostPropertyNames;
+									delete params.hostPropertyNames;
+								} else {
+									params.selectHosts = params.selectHostsOptions;
+								}
+								delete params.selectHostsOptions;
+							}
+
+							// Adjusting common properties
+							if(params.filter) {
+								params.filter = parseArrayToObject((params.filter as IDataObject).filter as Array<{key:string,values:IDataObject[]}>);
+							}
+							if(params.outputOptions) {
+								if(params.outputOptions === 'propertyNames') {
+									params.output = (params.outputPropertyNames as IDataObject[]).map(a => a.value);
+									delete params.outputPropertyNames;
+								} else {
+									params.output = params.outputOptions;
+								}
+								delete params.outputOptions;
+							}
+							if(params.search) {
+								params.search = parseArrayToObject((params.search as IDataObject).search as Array<{key:string,values:IDataObject[]}>);
+							}
+							if(params.sortorder) {
+								params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
+							}
+						}
+
+						responseData = await zabbixApiRequest.call(
+							this,
+							'event.get',
+							params,
+						);
+						if(responseData.error) {
+							throw new NodeOperationError(this.getNode(), responseData.error);
+						}
+						responseData = simplify(responseData);
+					}
+
+				} else if (resource === 'history') {
+					if (operation === 'get') {
+
+						// ----------------------------------------
+						//             history: get
+						// ----------------------------------------
+
+						// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/history/get
+
+						const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+						let params: IDataObject;
+						if(jsonParameters) {
+							const parametersJson = this.getNodeParameter('parametersJson', i);
+
+							if (parametersJson instanceof Object) {
+								// if it is an object
+								params = parametersJson as IDataObject;
+							} else {
+								// if it is a string
+								if (validateJSON(parametersJson as string) !== undefined) {
+									params = JSON.parse(parametersJson as string) as IDataObject;
+								} else {
+									throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+								}
+							}
+
 						} else {
 							params = this.getNodeParameter('parametersUi', i) as IDataObject;
 

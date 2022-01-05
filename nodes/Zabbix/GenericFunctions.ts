@@ -17,7 +17,7 @@ import {
 } from 'n8n-workflow';
 
 export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	endpoint: string, params: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
+	method: string, params: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
 
 	const authenticationMethod = this.getNodeParameter('authentication', 0, 'serviceAccount') as string;
 
@@ -49,7 +49,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 		token = credentials.apiToken as string;
 	}
 
-	const options = getOptions(endpoint, params, credentials, token, uri);
+	const options = getOptions(method, params, credentials, token, uri);
 
 	// tslint:disable-next-line:no-any
 	let responseData: Promise<any>;
@@ -70,7 +70,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 	return responseData;
 }
 
-function getOptions(endpoint: string, params: IDataObject, credentials: IDataObject, token: string|null = null, uri?: string) {
+function getOptions(method: string, params: IDataObject, credentials: IDataObject, token: string|null = null, uri?: string) {
 
 	const options: OptionsWithUri = {
 		method: 'POST',
@@ -79,7 +79,7 @@ function getOptions(endpoint: string, params: IDataObject, credentials: IDataObj
 		},
 		body: {
 			jsonrpc: "2.0",
-			method: endpoint,
+			method,
 			params,
 			id: 1,
 			auth: token,
@@ -92,14 +92,14 @@ function getOptions(endpoint: string, params: IDataObject, credentials: IDataObj
 }
 
 function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	credentials: IDataObject, uri?: string): Promise<IDataObject> {
+	credentials: IDataObject): Promise<IDataObject> {
 
 	const params: IDataObject = {
 		user: credentials.user,
 		password: credentials.password,
 	};
 
-	const options = getOptions("user.login", params, credentials, null, uri);
+	const options = getOptions("user.login", params, credentials, null);
 
 	try {
 		return this.helpers.request!(options);
@@ -109,9 +109,9 @@ function login(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunction
 }
 
 function logout(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-	credentials: IDataObject, token: string, uri?: string): Promise<IDataObject> {
+	credentials: IDataObject, token: string): Promise<IDataObject> {
 
-	const options = getOptions("user.logout",{}, credentials, token, uri);
+	const options = getOptions("user.logout",{}, credentials, token);
 
 	try {
 		return this.helpers.request!(options);

@@ -16,24 +16,8 @@ const hostOptions = [
         value: 'host',
     },
     {
-        name: 'Available',
-        value: 'available',
-    },
-    {
         name: 'Description',
         value: 'description',
-    },
-    {
-        name: 'Disable Until',
-        value: 'disable_until',
-    },
-    {
-        name: 'Error',
-        value: 'error',
-    },
-    {
-        name: 'Errors From',
-        value: 'errors_from',
     },
     {
         name: 'Flags',
@@ -48,22 +32,6 @@ const hostOptions = [
         value: 'ipmi_authtype',
     },
     {
-        name: 'IPMI Available',
-        value: 'ipmi_available',
-    },
-    {
-        name: 'IPMI Disable Until',
-        value: 'ipmi_disable_until',
-    },
-    {
-        name: 'IPMI Error',
-        value: 'ipmi_error',
-    },
-    {
-        name: 'IPMI Errors From',
-        value: 'ipmi_errors_from',
-    },
-    {
         name: 'IPMI Password',
         value: 'ipmi_password',
     },
@@ -74,22 +42,6 @@ const hostOptions = [
     {
         name: 'IPMI Username',
         value: 'ipmi_username',
-    },
-    {
-        name: 'JMX Available',
-        value: 'jmx_available',
-    },
-    {
-        name: 'JMX Disable Until',
-        value: 'jmx_disable_until',
-    },
-    {
-        name: 'JMX Error',
-        value: 'jmx_error',
-    },
-    {
-        name: 'JMX Errors From',
-        value: 'jmx_errors_from',
     },
     {
         name: 'Maintenance From',
@@ -114,25 +66,6 @@ const hostOptions = [
     {
         name: 'Proxy Host ID',
         value: 'proxy_hostid',
-    },
-    {
-        name: 'SNMP Available',
-        value: 'snmp_available',
-        description: 'Availability of SNMP agent',
-    },
-    {
-        name: 'SNMP Disable Until',
-        value: 'snmp_disable_until',
-        description: 'The next polling time of an unavailable SNMP agent',
-    },
-    {
-        name: 'SNMP Error',
-        value: 'snmp_error',
-    },
-    {
-        name: 'SNMP Errors From',
-        value: 'snmp_errors_from',
-        description: 'Time when SNMP agent became unavailable',
     },
     {
         name: 'Status',
@@ -1221,6 +1154,77 @@ const inventoryOptions = [
     },
 ];
 
+const eventOptions = [
+    {
+        name: 'Event ID',
+        value: 'eventid',
+    },
+    {
+        name: 'Source',
+        value: 'source',
+    },
+    {
+        name: 'Object',
+        value: 'object',
+    },
+    {
+        name: 'Object ID',
+        value: 'objectid',
+    },
+    {
+        name: 'Acknowledged',
+        value: 'acknowledged',
+    },
+    {
+        name: 'Clock',
+        value: 'clock',
+    },
+    {
+        name: 'Nanoseconds',
+        value: 'ns',
+    },
+    {
+        name: 'Name',
+        value: 'name',
+    },
+    {
+        name: 'Value',
+        value: 'value',
+    },
+    {
+        name: 'Severity',
+        value: 'severity',
+    },
+    {
+        name: 'Recovery event ID',
+        value: 'r_eventid',
+    },
+    {
+        name: 'Closing event ID',
+        value: 'c_eventid',
+    },
+    {
+        name: 'Correlation ID',
+        value: 'correlationid',
+    },
+    {
+        name: 'User ID',
+        value: 'userid',
+    },
+    {
+        name: 'Suppressed',
+        value: 'suppressed',
+    },
+    {
+        name: 'Operational Data',
+        value: 'opdata',
+    },
+    {
+        name: 'URLs',
+        value: 'urls',
+    },
+];
+
 const historyOptions = [
     {
         name: 'Clock',
@@ -1453,7 +1457,7 @@ export function getCommonGetParameters(resource: string) {
                 {
                     name: 'Property Names',
                     value: 'propertyNames',
-                    description: 'Array of property names to return only specific properties (add parameter Select Output Property Names)',
+                    description: 'Array of property names to return only specific properties (add parameter Output Property Names)',
                 },
             ],
         },
@@ -1482,7 +1486,7 @@ export function getCommonGetParameters(resource: string) {
                     type: 'options',
                     default: '',
                     description: 'The property name to return.',
-                            options: getOptions(resource),
+                    options: getOptions(resource),
                 },
             ],
         },
@@ -1599,6 +1603,8 @@ export function getCommonGetParameters(resource: string) {
     ];
 }
 
+// Part of the common get method parameters
+// But some resources do not support it (e.g. history)
 export const preserveKeys = [
     {
         displayName: 'Preserve Keys',
@@ -1625,6 +1631,10 @@ export const limitSelects = [
 export function getSortfieldOptions(resource: string): INodePropertyOptions[] {
     let options: INodePropertyOptions[] = [];
     switch (resource) {
+        case 'event': {
+            options = sortfieldOptionsEvent;
+            break;
+        }
         case 'history': {
             options = sortfieldOptionsHistory;
             break;
@@ -1650,6 +1660,10 @@ export function getSortfieldOptions(resource: string): INodePropertyOptions[] {
 export function getOptions(resource: string): INodePropertyOptions[] {
     let options: INodePropertyOptions[] = [];
     switch (resource) {
+        case 'event': {
+            options = eventOptions;
+            break;
+        }
         case 'history': {
             options = historyOptions;
             break;
@@ -1671,6 +1685,22 @@ export function getOptions(resource: string): INodePropertyOptions[] {
     }
     return options;
 }
+
+// Possible values for sorting of history:get
+export const sortfieldOptionsEvent = [
+    {
+        name: 'Event ID',
+        value: 'eventid',
+    },
+    {
+        name: 'Object ID',
+        value: 'objectid',
+    },
+    {
+        name: 'Clock',
+        value: 'clock',
+    },
+];
 
 // Possible values for sorting of history:get
 export const sortfieldOptionsHistory = [
@@ -1748,9 +1778,8 @@ export const sortfieldOptionsProblem = [
     },
 ];
 
-
 /*-------------------------------------------------------------------------- */
-/*                       Other common query type properties	                 */
+/*                       Common query type properties	                     */
 /* ------------------------------------------------------------------------- */
 
 export const selectApplicationsQuery = [
@@ -2602,3 +2631,249 @@ export const selectSuppressionDataQuery = [
         ],
     },
 ];
+
+/*-------------------------------------------------------------------------- */
+/*                              Common properties	                         */
+/* ------------------------------------------------------------------------- */
+
+export const itemIds = {
+    displayName: 'Item IDs',
+    name: 'itemids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Item',
+    },
+    placeholder: 'Add Item ID',
+    default: {},
+    description: 'Return only records for the given item IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the item.',
+        },
+    ],
+};
+
+export const groupIds = {
+    displayName: 'Group IDs',
+    name: 'groupids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Group',
+    },
+    placeholder: 'Add Group ID',
+    default: {},
+    description: 'Return only records for the given group IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the group.',
+        },
+    ],
+};
+
+export const templateIds = {
+    displayName: 'Template IDs',
+    name: 'templateids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Template',
+    },
+    placeholder: 'Add Template ID',
+    default: {},
+    description: 'Return only records for the given template IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the template.',
+        },
+    ],
+};
+
+export const proxyIds = {
+    displayName: 'Proxy IDs',
+    name: 'proxyids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Proxy',
+    },
+    placeholder: 'Add Proxy ID',
+    default: {},
+    description: 'Return only records for the given proxy IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the proxy.',
+        },
+    ],
+};
+
+export const interfaceIds = {
+    displayName: 'Interface IDs',
+    name: 'interfaceids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Interface',
+    },
+    placeholder: 'Add Interface ID',
+    default: {},
+    description: 'Return only records for the given interface IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the interface.',
+        },
+    ],
+};
+
+export const graphIds = {
+    displayName: 'Graph IDs',
+    name: 'graphids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Graph',
+    },
+    placeholder: 'Add Graph ID',
+    default: {},
+    description: 'Return only records for the given graph IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the graph.',
+        },
+    ],
+};
+
+export const triggerIds = {
+    displayName: 'Trigger IDs',
+    name: 'triggerids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Trigger',
+    },
+    placeholder: 'Add Trigger ID',
+    default: {},
+    description: 'Return only records for the given trigger IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the trigger.',
+        },
+    ],
+};
+
+export const applicationIds = {
+    displayName: 'Application IDs',
+    name: 'applicationids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Application',
+    },
+    default: {},
+    placeholder: 'Add Application ID',
+    description: 'Return only records for the given application IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the application.',
+        },
+    ],
+};
+
+export const eventIds = {
+    displayName: 'Event IDs',
+    name: 'eventids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Event',
+    },
+    placeholder: 'Add Event ID',
+    default: {},
+    description: 'Return only records for the given event IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the host.',
+        },
+    ],
+};
+
+export const hostIds = {
+    displayName: 'Host IDs',
+    name: 'hostids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Host',
+    },
+    placeholder: 'Add Host ID',
+    default: {},
+    description: 'Return only records for the given host IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the host.',
+        },
+    ],
+};
+
+export const objectIds = {
+    displayName: 'Object IDs',
+    name: 'objectids',
+    type: 'collection',
+    typeOptions: {
+        multipleValues: true,
+        multipleValueButtonText: 'Add Object',
+    },
+    default: {},
+    placeholder: 'Add Object ID',
+    description: 'Return only records for the given object IDs.',
+    options: [
+        {
+            displayName: 'ID',
+            name: 'id',
+            type: 'string',
+            default: '',
+            description: 'ID of the application.',
+        },
+    ],
+};
