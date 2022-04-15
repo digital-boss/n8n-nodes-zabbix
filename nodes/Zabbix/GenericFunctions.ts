@@ -152,7 +152,7 @@ export function simplify(responseData: IDataObject): IDataObject {
 }
 
 /**
- * Creates an object from an array of names values
+ * Creates an object from an array of names and values
  *
  * @export
  * @param Array<{key:string,value:string}> data
