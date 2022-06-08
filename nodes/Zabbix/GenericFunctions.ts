@@ -17,7 +17,7 @@ import {
 } from 'n8n-workflow';
 
 export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions | IExecuteSingleFunctions | ILoadOptionsFunctions,
-																			 method: string, params: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
+	method: string, params: IDataObject, uri?: string): Promise<any> { // tslint:disable-line:no-any
 
 	const authenticationMethod = this.getNodeParameter('authentication', 0, 'serviceAccount') as string;
 

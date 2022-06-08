@@ -138,6 +138,7 @@ export class Zabbix implements INodeType {
 		const returnData: IDataObject[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
+		let method, params;
 
 		for (let i = 0; i < items.length; i++) {
 			try {
@@ -150,9 +151,9 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/event/get
 
+								method = 'event.get';
 								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
-								let params: IDataObject;
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
 
@@ -231,16 +232,6 @@ export class Zabbix implements INodeType {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
 									}
 								}
-
-								responseData = await zabbixApiRequest.call(
-									this,
-									'event.get',
-									params,
-								);
-								if (responseData.error) {
-									throw new NodeOperationError(this.getNode(), responseData.error);
-								}
-								responseData = simplify(responseData);
 								break;
 
 							default: {
@@ -257,9 +248,9 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/history/get
 
+								method = 'history.get';
 								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
-								let params: IDataObject;
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
 
@@ -306,16 +297,6 @@ export class Zabbix implements INodeType {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
 									}
 								}
-
-								responseData = await zabbixApiRequest.call(
-									this,
-									'history.get',
-									params,
-								);
-								if (responseData.error) {
-									throw new NodeOperationError(this.getNode(), responseData.error);
-								}
-								responseData = simplify(responseData);
 								break;
 
 							default: {
@@ -332,9 +313,9 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/host/get
 
+								method = 'host.get';
 								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
-								let params: IDataObject;
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
 
@@ -595,16 +576,6 @@ export class Zabbix implements INodeType {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
 									}
 								}
-
-								responseData = await zabbixApiRequest.call(
-									this,
-									'host.get',
-									params,
-								);
-								if (responseData.error) {
-									throw new NodeOperationError(this.getNode(), responseData.error);
-								}
-								responseData = simplify(responseData);
 								break;
 
 							default: {
@@ -622,9 +593,9 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/item/get
 
+								method = 'item.get';
 								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
-								let params: IDataObject;
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
 
@@ -791,16 +762,6 @@ export class Zabbix implements INodeType {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
 									}
 								}
-
-								responseData = await zabbixApiRequest.call(
-									this,
-									'item.get',
-									params,
-								);
-								if (responseData.error) {
-									throw new NodeOperationError(this.getNode(), responseData.error);
-								}
-								responseData = simplify(responseData);
 								break;
 
 							default: {
@@ -817,9 +778,9 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/problem/get
 
+								method = 'problem.get';
 								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
-								let params: IDataObject;
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
 
@@ -888,16 +849,6 @@ export class Zabbix implements INodeType {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
 									}
 								}
-
-								responseData = await zabbixApiRequest.call(
-									this,
-									'problem.get',
-									params,
-								);
-								if (responseData.error) {
-									throw new NodeOperationError(this.getNode(), responseData.error);
-								}
-								responseData = simplify(responseData);
 								break;
 
 							default: {
@@ -910,6 +861,18 @@ export class Zabbix implements INodeType {
 						throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not supported!`);
 					}
 				}
+
+
+				responseData = await zabbixApiRequest.call(
+					this,
+					method,
+					params,
+				);
+				if (responseData.error) {
+					throw new NodeOperationError(this.getNode(), responseData.error);
+				}
+				responseData = simplify(responseData);
+
 
 				if (Array.isArray(responseData)) {
 					returnData.push.apply(returnData, responseData as IDataObject[]);
