@@ -59,7 +59,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 
 		if (authenticationMethod === 'credentials') {
 			const logoutResponse = await logout.call(this, credentials, token, id);
-			if (logoutResponse.result === undefined && logoutResponse.result !== true) {
+			if (logoutResponse.result === undefined || logoutResponse.result !== true) {
 				throw new NodeOperationError(this.getNode(), logoutResponse.message as string);
 			}
 		}
@@ -135,18 +135,18 @@ export function validateJSON(json: string | undefined): any { // tslint:disable-
  * Simplifies the output
  *
  * @export
- * @param IDataObject data
  * @returns IDataObject
+ * @param responseData
  */
 export function simplify(responseData: IDataObject): IDataObject {
-	if (Object.keys(responseData.result as IDataObject).length === 0) {
+	if (responseData.result && Object.keys(responseData.result as IDataObject).length === 0) {
 		// if responseData.result is empty
 		return {
 			success: true,
 			message: 'No records got returned.',
 		};
 	} else {
-		return responseData.result as IDataObject;
+		return responseData.result as IDataObject || responseData;
 	}
 
 }
@@ -155,8 +155,8 @@ export function simplify(responseData: IDataObject): IDataObject {
  * Creates an object from an array of names and values
  *
  * @export
- * @param Array<{key:string,value:string}> data
  * @returns IDataObject
+ * @param data
  */
 export function parseArrayToObject(data: Array<{ key: string, values: string | number | IDataObject[] }>): IDataObject {
 	const jsonData: IDataObject = {};
@@ -179,7 +179,7 @@ export function parseArrayToObject(data: Array<{ key: string, values: string | n
 
 export function convertBooleanToNumber(input: boolean): number {
 	let value: number;
-	if (input === true) {
+	if (input) {
 		value = 1;
 	} else {
 		value = 0;
@@ -189,7 +189,7 @@ export function convertBooleanToNumber(input: boolean): number {
 
 export function convertBooleanToFlag(input: boolean): number | null {
 	let value: number | null;
-	if (input === true) {
+	if (input) {
 		value = 1;
 	} else {
 		value = null;
