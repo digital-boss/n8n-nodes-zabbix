@@ -1338,6 +1338,86 @@ const dictionaryObjectFields = {
 			description: 'Active media types URLs',
 		},
 	],
+	service: [
+		{
+			name: 'Service ID',
+			value: 'serviceid',
+		},
+		{
+			name: 'Algorithm',
+			value: 'algorithm',
+		},
+		{
+			name: 'Name',
+			value: 'name',
+		},
+		{
+			name: 'Sort Order',
+			value: 'sortorder',
+		},
+		{
+			name: 'Weight',
+			value: 'weight',
+		},
+		{
+			name: 'Propagation Rule',
+			value: 'propagation_rule',
+		},
+		{
+			name: 'Propagation Value',
+			value: 'propagation_value',
+		},
+		{
+			name: 'Status',
+			value: 'status',
+		},
+		{
+			name: 'Description',
+			value: 'description',
+		},
+		{
+			name: 'Uuid',
+			value: 'uuid',
+		},
+		{
+			name: 'Read Only',
+			value: 'readonly',
+		},
+	],
+	sla: [
+		{
+			name: 'SLA ID',
+			value: 'slaid',
+		},
+		{
+			name: 'Name',
+			value: 'name',
+		},
+		{
+			name: 'Period',
+			value: 'period',
+		},
+		{
+			name: 'SLO',
+			value: 'slo',
+		},
+		{
+			name: 'Effective Date',
+			value: 'effective_date',
+		},
+		{
+			name: 'Timezone',
+			value: 'timezone',
+		},
+		{
+			name: 'Status',
+			value: 'status',
+		},
+		{
+			name: 'Description',
+			value: 'description',
+		},
+	],
 };
 
 /*-------------------------------------------------------------------------- */
@@ -1452,7 +1532,7 @@ export function getCommonGetParameters(resource: string) {
 				},
 			],
 		},
-		{
+		{ // assign to the output parameter when it exists
 			displayName: 'Output Property Names',
 			name: 'outputPropertyNames',
 			type: 'collection',
@@ -1642,6 +1722,14 @@ export function getSortfieldOptions(resource: string): INodePropertyOptions[] {
 			options = dictionarySortfieldOptions.problem;
 			break;
 		}
+		case 'service': {
+			options = dictionarySortfieldOptions.service;
+			break;
+		}
+		case 'sla': {
+			options = dictionarySortfieldOptions.sla;
+			break;
+		}
 		default: {
 			break;
 		}
@@ -1670,6 +1758,14 @@ export function getOptions(resource: string): INodePropertyOptions[] {
 		}
 		case 'problem': {
 			options = dictionaryObjectFields.problem;
+			break;
+		}
+		case 'service': {
+			options = dictionaryObjectFields.service;
+			break;
+		}
+		case 'sla': {
+			options = dictionaryObjectFields.sla;
 			break;
 		}
 		default: {
@@ -1765,6 +1861,64 @@ export const dictionarySortfieldOptions = {
 		{
 			name: 'Event ID',
 			value: 'eventid',
+		},
+	],
+	// Possible values for sorting of service:get
+	service: [
+		{
+			name: 'Service ID',
+			value: 'serviceid',
+		},
+		{
+			name: 'Name',
+			value: 'name',
+		},
+		{
+			name: 'Status',
+			value: 'status',
+		},
+		{
+			name: 'Sort Order',
+			value: 'sortorder',
+		},
+		{
+			name: 'Created At',
+			value: 'created_at',
+		},
+	],
+	// Possible values for sorting of sla:get
+	sla: [
+		{
+			name: 'SLA ID',
+			value: 'slaid',
+		},
+		{
+			name: 'Name',
+			value: 'name',
+		},
+		{
+			name: 'Period',
+			value: 'period',
+		},
+		{
+			name: 'SLO',
+			value: 'slo',
+		},
+		{
+			name: 'Effective Date',
+			value: 'effective_date',
+		},
+		{
+			name: 'Timezone',
+			value: 'timezone',
+		},
+		{
+			name: 'Status',
+			value: 'status',
+		},
+		{
+			name: 'Description',
+			value: 'description',
 		},
 	],
 };

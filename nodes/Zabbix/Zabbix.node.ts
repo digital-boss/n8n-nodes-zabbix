@@ -20,7 +20,11 @@ import {
 	itemFields,
 	itemOperations,
 	problemFields,
-	problemOperations
+	problemOperations,
+	serviceFields,
+	serviceOperations,
+	slaFields,
+	slaOperations,
 } from './descriptions';
 
 import {
@@ -114,6 +118,14 @@ export class Zabbix implements INodeType {
 						name: 'Problem',
 						value: 'problem',
 					},
+					{
+						name: 'Service',
+						value: 'service',
+					},
+					{
+						name: 'Sla',
+						value: 'sla',
+					},
 				],
 				default: 'host',
 				required: true,
@@ -129,6 +141,10 @@ export class Zabbix implements INodeType {
 			...itemFields,
 			...problemOperations,
 			...problemFields,
+			...serviceOperations,
+			...serviceFields,
+			...slaOperations,
+			...slaFields,
 		],
 	};
 
@@ -138,7 +154,7 @@ export class Zabbix implements INodeType {
 		const returnData: IDataObject[] = [];
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
-		let method, params;
+		let method, params, jsonParameters;
 
 		for (let i = 0; i < items.length; i++) {
 			try {
@@ -152,7 +168,7 @@ export class Zabbix implements INodeType {
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/event/get
 
 								method = 'event.get';
-								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
@@ -249,7 +265,7 @@ export class Zabbix implements INodeType {
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/history/get
 
 								method = 'history.get';
-								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
@@ -314,7 +330,7 @@ export class Zabbix implements INodeType {
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/host/get
 
 								method = 'host.get';
-								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
@@ -594,7 +610,7 @@ export class Zabbix implements INodeType {
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/item/get
 
 								method = 'item.get';
-								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
@@ -779,7 +795,7 @@ export class Zabbix implements INodeType {
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/problem/get
 
 								method = 'problem.get';
-								const jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
 									const parametersJson = this.getNodeParameter('parametersJson', i);
@@ -847,6 +863,211 @@ export class Zabbix implements INodeType {
 									}
 									if (params.sortorder) {
 										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
+									}
+								}
+								break;
+
+							default: {
+								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
+							}
+						}
+						break;
+
+					case 'service':
+						switch (operation) {
+							case 'get':
+								// ----------------------------------------
+								//             service: get
+								// ----------------------------------------
+								// https://www.zabbix.com/documentation/current/it/manual/api/reference/service/get
+
+								method = 'service.get';
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+								if (jsonParameters) {
+									const parametersJson = this.getNodeParameter('parametersJson', i);
+
+									if (parametersJson instanceof Object) {
+										// if it is an object
+										params = parametersJson as IDataObject;
+									} else {
+										// if it is a string
+										if (validateJSON(parametersJson as string) !== undefined) {
+											params = JSON.parse(parametersJson as string) as IDataObject;
+										} else {
+											throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+										}
+									}
+
+								} else {
+									params = this.getNodeParameter('parametersUi', i) as IDataObject;
+
+									if (params.serviceids) {
+										// type - array/string
+										params.serviceids = (params.serviceids as IDataObject[]).map(a => a.id);
+									}
+									if (params.parentids) {
+										// type - array/string
+										params.parentids = (params.parentids as IDataObject[]).map(a => a.id);
+									}
+									if (params.deep_parentids !== undefined) {
+										// type - flag
+										params.deep_parentids = convertBooleanToFlag(params.deep_parentids as boolean);
+									}
+									if (params.childids) {
+										// type - array/string
+										params.childids = (params.childids as IDataObject[]).map(a => a.id);
+									}
+									if (params.tags) {
+										// type - string/array
+										params.tags = (params.tags as IDataObject).tags;
+									}
+									if (params.problem_tags) {
+										// type - string/array
+										params.problem_tags = (params.problem_tags as IDataObject).problem_tags;
+									}
+									if (params.without_problem_tags !== undefined) {
+										// type - flag
+										params.without_problem_tags = convertBooleanToFlag(params.without_problem_tags as boolean);
+									}
+									if (params.slaids) {
+										// type - array/string
+										params.slaids = (params.slaids as IDataObject[]).map(a => a.id);
+									}
+									if (params.selectStatusTimeline) {
+										// type - string/array
+										params.selectStatusTimeline = (params.selectStatusTimeline as IDataObject).statusTimeline;
+									}
+
+									// Adjusting common properties
+									if (params.filter) {
+										// type - object
+										params.filter = parseArrayToObject((params.filter as IDataObject).filter as Array<{ key: string, values: IDataObject[] }>);
+									}
+									if (params.outputOptions) {
+										// type - query
+										if (params.outputOptions === 'propertyNames') {
+											params.output = (params.outputPropertyNames as IDataObject[]).map(a => a.value);
+											delete params.outputPropertyNames;
+										} else {
+											params.output = params.outputOptions;
+										}
+										delete params.outputOptions;
+									}
+									if (params.search) {
+										// type - object
+										params.search = parseArrayToObject((params.search as IDataObject).search as Array<{ key: string, values: IDataObject[] }>);
+
+									}
+									if (params.sortorder) {
+										// type - string/array
+										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
+									}
+								}
+
+								break;
+
+							default: {
+								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
+							}
+						}
+						break;
+
+					case 'sla':
+						switch (operation) {
+							case 'get':
+								// ----------------------------------------
+								//             sla: get
+								// ----------------------------------------
+								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/sla/get
+
+								method = 'problem.get';
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+								if (jsonParameters) {
+									const parametersJson = this.getNodeParameter('parametersJson', i);
+
+									if (parametersJson instanceof Object) {
+										// if it is an object
+										params = parametersJson as IDataObject;
+									} else {
+										// if it is a string
+										if (validateJSON(parametersJson as string) !== undefined) {
+											params = JSON.parse(parametersJson as string) as IDataObject;
+										} else {
+											throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+										}
+									}
+
+								} else {
+									params = this.getNodeParameter('parametersUi', i) as IDataObject;
+
+									if (params.slaids) {
+										// type - array/string
+										params.slaids = (params.slaids as IDataObject[]).map(a => a.id);
+									}
+									if (params.serviceids) {
+										// type - array/string
+										params.serviceids = (params.serviceids as IDataObject[]).map(a => a.id);
+									}
+
+									// Adjusting common properties
+									if (params.filter) {
+										params.filter = parseArrayToObject((params.filter as IDataObject).filter as Array<{ key: string, values: IDataObject[] }>);
+									}
+									if (params.outputOptions) {
+										if (params.outputOptions === 'propertyNames') {
+											params.output = (params.outputPropertyNames as IDataObject[]).map(a => a.value);
+											delete params.outputPropertyNames;
+										} else {
+											params.output = params.outputOptions;
+										}
+										delete params.outputOptions;
+									}
+									if (params.search) {
+										params.search = parseArrayToObject((params.search as IDataObject).search as Array<{ key: string, values: IDataObject[] }>);
+									}
+									if (params.sortorder) {
+										params.sortorder = (params.sortorder as IDataObject[]).map(a => a.sortorder);
+									}
+								}
+								break;
+
+							case 'getsli':
+								// ----------------------------------------
+								//             sla: getsli
+								// ----------------------------------------
+								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/sla/getsli
+
+								method = 'sla.getsli';
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+								if (jsonParameters) {
+									const parametersJson = this.getNodeParameter('parametersJson', i);
+
+									if (parametersJson instanceof Object) {
+										// if it is an object
+										params = parametersJson as IDataObject;
+									} else {
+										// if it is a string
+										if (validateJSON(parametersJson as string) !== undefined) {
+											params = JSON.parse(parametersJson as string) as IDataObject;
+										} else {
+											throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+										}
+									}
+
+								} else {
+									params = this.getNodeParameter('parametersUi', i) as IDataObject;
+									params.slaid = this.getNodeParameter('slaid', i) as string;
+
+									if (params.periods) {
+										// type - array/string
+										params.periods = (params.periods as IDataObject[]).map(a => a.period);
+									}
+									if (params.serviceids) {
+										// type - array/string
+										params.serviceids = (params.serviceids as IDataObject[]).map(a => a.id);
 									}
 								}
 								break;
