@@ -36,6 +36,8 @@ import {
 	zabbixApiRequest,
 } from './GenericFunctions';
 
+import { version } from '../version';
+
 export class Zabbix implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Zabbix',
@@ -44,7 +46,7 @@ export class Zabbix implements INodeType {
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Consume Zabbix API (v.0.2.6)', // TODO: increase package version automatically
+		description: `Consume Zabbix API (v.${version})`,
 		defaults: {
 			name: 'Zabbix',
 			color: '#d40000',

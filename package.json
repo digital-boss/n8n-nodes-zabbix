@@ -12,13 +12,30 @@
         "type": "git",
         "url": "git+https://github.com/digital-boss/n8n-nodes-zabbix.git"
     },
+    "keywords": [
+        "n8n",
+        "nodemation",
+        "dnc",
+        "digital north consulting",
+        "digital boss",
+        "nodes",
+        "custom",
+        "workflow",
+        "customer service",
+        "zabbix"
+    ],
     "main": "index.js",
     "scripts": {
         "dev": "npm run watch",
-        "build": "tsc && gulp",
-        "tslint": "tslint -p tsconfig.json -c tslint.json",
+        "build": "genversion -s -e nodes/version.ts && git add . && tsc && gulp",
+        "lint": "tslint -p tsconfig.json -c tslint.json",
+        "lintfix": "tslint --fix -p tsconfig.json -c tslint.json",
+        "nodelinter": "nodelinter",
         "watch": "tsc --watch",
-        "test": "jest"
+        "test": "jest",
+        "release": "npm run build && npm publish --access=public",
+        "version": "npm run build",
+        "postversion": "git push"
     },
     "files": [
         "dist"
@@ -37,6 +54,7 @@
         "@types/jest": "^26.0.13",
         "@types/node": "14.17.27",
         "@types/request-promise-native": "~1.0.15",
+        "genversion": "^3.1.1",
         "gulp": "^4.0.0",
         "jest": "^26.4.2",
         "n8n-workflow": "~0.79.0",
