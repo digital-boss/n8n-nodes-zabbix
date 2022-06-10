@@ -983,7 +983,7 @@ export class Zabbix implements INodeType {
 								// ----------------------------------------
 								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/sla/get
 
-								method = 'problem.get';
+								method = 'sla.get';
 								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
 
 								if (jsonParameters) {
