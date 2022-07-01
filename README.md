@@ -47,3 +47,7 @@ Special thanks to [N8N nodemation](https://n8n.io/) workflow automation by Jan O
 Nodes by [digital-north-consulting.com](https://digital-north-consulting.com/). For productive use and consulting on this, [contact us please](info@digital-north-consulting.com).
 
 This node was programmed with ❤ by Valentina Lilova [valentina98](https://github.com/valentina98)
+
+# License
+
+[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)

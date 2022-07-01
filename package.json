@@ -2,7 +2,7 @@
     "name": "@digital-boss/n8n-nodes-zabbix",
     "version": "0.2.8",
     "description": "Zabbix support for n8n.",
-    "license": "SEE LICENSE IN LICENSE.md",
+    "license": "MIT",
     "homepage": "https://n8n.io",
     "author": {
         "name": "Valentina Lilova",
