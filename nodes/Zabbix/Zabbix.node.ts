@@ -1063,10 +1063,6 @@ export class Zabbix implements INodeType {
 									params = this.getNodeParameter('parametersUi', i) as IDataObject;
 									params.slaid = this.getNodeParameter('slaid', i) as string;
 
-									if (params.periods) {
-										// type - array/string
-										params.periods = (params.periods as IDataObject[]).map(a => a.period);
-									}
 									if (params.serviceids) {
 										// type - array/string
 										params.serviceids = (params.serviceids as IDataObject[]).map(a => a.id);

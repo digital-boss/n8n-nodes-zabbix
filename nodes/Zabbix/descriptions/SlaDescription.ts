@@ -290,26 +290,13 @@ export const slaFields = [
 			{
 				displayName: 'Periods',
 				name: 'periods',
-				type: 'collection',
+				type: 'number',
 				typeOptions: {
-					multipleValues: true,
-					multipleValueButtonText: 'Add Period',
+					minValue: 1,
+					maxValue: 100,
 				},
-				default: {},
-				description: 'Preferred number of periods to report',
-				options: [
-					{
-						displayName: 'Period',
-						name: 'period',
-						type: 'number',
-						typeOptions: {
-							minValue: 1,
-							maxValue: 100,
-						},
-						default: '',
-						description: 'Possible values: 1-100',
-					},
-				],
+				default: '',
+				description: 'Preferred number of periods to report. Possible values: 1-100.',
 			},
 			{
 				displayName: 'Service IDs',
