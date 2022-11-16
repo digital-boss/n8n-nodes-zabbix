@@ -30,5 +30,11 @@ export class ZabbixApi implements ICredentialType {
 			},
 			default: '',
 		},
+		{
+			displayName: 'Testing Mode',
+			name: 'testingMode',
+			type: 'boolean',
+			default: false,
+		},
 	];
 }

@@ -22,7 +22,7 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 	const authenticationMethod = this.getNodeParameter('authentication', 0, 'serviceAccount') as string;
 
 	let credentials: IDataObject;
-	let token: string;
+	let token = '';
 	const id = Math.floor(Math.random() * 100);
 
 	try {
@@ -35,13 +35,15 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
 			}
 
-			const loginResponse = await login.call(this, credentials, id);
+			if (!credentials.testingMode) {
+				const loginResponse = await login.call(this, credentials, id);
 
-			if (loginResponse.result === undefined) {
-				throw new NodeOperationError(this.getNode(), 'Login wasn\'t successful.');
+				if (loginResponse.result === undefined) {
+					throw new NodeOperationError(this.getNode(), 'Login wasn\'t successful.');
+				}
+
+				token = loginResponse.result as string;
 			}
-
-			token = loginResponse.result as string;
 		} else {
 			// Login with API token
 			credentials = await this.getCredentials('zabbixTokenApi') as ICredentialDataDecryptedObject;
@@ -50,14 +52,21 @@ export async function zabbixApiRequest(this: IHookFunctions | IExecuteFunctions 
 				throw new NodeOperationError(this.getNode(), 'No credentials got returned!');
 			}
 
-			token = credentials.apiToken as string;
+			if (!credentials.testingMode) {
+				token = credentials.apiToken as string;
+			}
 		}
 
 		const options = getOptions(method, params, credentials, token, id, uri);
 
-		const responseData = await this.helpers.request!(options);
+		let responseData;
+		if (credentials.testingMode) {
+			responseData = formatHttpOpts(options);
+		} else {
+			responseData = await this.helpers.request!(options);
+		}
 
-		if (authenticationMethod === 'credentials') {
+		if (!credentials.testingMode && authenticationMethod === 'credentials') {
 			const logoutResponse = await logout.call(this, credentials, token, id);
 			if (logoutResponse.result === undefined || logoutResponse.result !== true) {
 				throw new NodeOperationError(this.getNode(), logoutResponse.message as string);
@@ -196,3 +205,15 @@ export function convertBooleanToFlag(input: boolean): number | null {
 	}
 	return value;
 }
+
+// tslint:disable-next-line:no-any
+const formatHttpOpts = (opts: OptionsWithUri): any => {
+	// workaround weird n8n bug: if returned object contains json: true, it returns only true value (no properties will returned).
+	// so just rename json to jsonX
+	const {json, ...logData} = opts;
+	if (json !== undefined) {
+		// tslint:disable-next-line:no-any
+		(logData as any).jsonX = json;
+	}
+	return logData;
+};

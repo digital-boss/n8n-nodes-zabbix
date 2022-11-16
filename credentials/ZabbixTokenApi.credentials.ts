@@ -21,5 +21,11 @@ export class ZabbixTokenApi implements ICredentialType {
 			type: 'string' as NodePropertyTypes,
 			default: '',
 		},
+		{
+			displayName: 'Testing Mode',
+			name: 'testingMode',
+			type: 'boolean',
+			default: false,
+		},
 	];
 }
