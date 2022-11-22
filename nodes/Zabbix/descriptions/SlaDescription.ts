@@ -29,6 +29,11 @@ export const slaOperations = [
 				value: 'getsli',
 				description: 'Calculate the Service Level Indicator (SLI) data',
 			},
+			{
+				name: 'Update',
+				value: 'update',
+				description: 'This method allows to update existing SLA entries',
+			},
 		],
 		default: 'get',
 		description: 'The operation to perform',
@@ -319,6 +324,284 @@ export const slaFields = [
 					},
 				],
 			},
+		],
+	},
+
+	/*-------------------------------------------------------------------------- */
+	/*                                	sla:update                             	 */
+	/* ------------------------------------------------------------------------- */
+	{
+		displayName: 'JSON Parameters',
+		name: 'jsonParameters',
+		type: 'boolean',
+		displayOptions: {
+			show: {
+				resource: ['sla'],
+				operation: ['update'],
+			},
+		},
+		default: false,
+		description: 'Add parameters as JSON',
+	},
+	{
+		displayName: 'See <a href="https://www.zabbix.com/documentation/5.0/en/manual/api/reference/sla/update" target="_blank">Zabbix documentation</a> on sla.update properties. ' +
+			'Note: This method is only available to Admin and Super admin user types. ' +
+			'Permissions to call the method can be revoked in user role settings.',
+		name: 'jsonNotice',
+		type: 'notice',
+		displayOptions: {
+			show: {
+				resource: ['sla'],
+				operation: ['update'],
+			},
+		},
+		default: '',
+	},
+	{
+		displayName: 'Parameters JSON',
+		name: 'parametersJson',
+		type: 'json',
+		displayOptions: {
+			show: {
+				resource: ['sla'],
+				operation: ['update'],
+				jsonParameters: [true],
+			},
+		},
+		default: '',
+		description: 'Parameters as JSON (flat object) or JSON string',
+	},
+	{
+		displayName: 'SLA ID',
+		name: 'slaid',
+		required: true,
+		type: 'string',
+		displayOptions: {
+			show: {
+				resource: ['sla'],
+				operation: ['update'],
+				jsonParameters: [false],
+			},
+		},
+		default: '',
+		description: 'ID of the SLA',
+	},
+	{
+		displayName: 'Parameters',
+		name: 'parametersUi',
+		placeholder: 'Add Parameter',
+		type: 'collection',
+		displayOptions: {
+			show: {
+				resource: ['sla'],
+				operation: ['update'],
+				jsonParameters: [false],
+			},
+		},
+		description: 'The query parameters to send',
+		default: {},
+		options: [
+			{
+				displayName: 'Name',
+				name: 'name',
+				type: 'string',
+				default: '',
+				description: 'ID of the SLA',
+			},
+			{
+				displayName: 'Period',
+				name: 'period',
+				type: 'options',
+				default: '',
+				description: 'Reporting period of the SLA',
+				options: [
+					{
+						name: '0 - daily',
+						value: 0,
+					},
+					{
+						name: '1 - weekly',
+						value: 1,
+					},
+					{
+						name: '2 - monthly',
+						value: 2,
+					},
+					{
+						name: '3 - quarterly',
+						value: 3,
+					},
+					{
+						name: '4 - annually',
+						value: 4,
+					},
+				]
+			},
+			{
+				displayName: 'SLO',
+				name: 'slo',
+				type: 'number',
+				default: '',
+				description: 'Minimum acceptable Service Level Objective expressed as a percent. ' +
+					'If the Service Level Indicator (SLI) drops lower, the SLA is considered to be in problem/unfulfilled state. ' +
+					'Possible values: 0-100 (up to 4 fractional digits).',
+			},
+			{
+				displayName: 'Effective Date',
+				name: 'effective_date',
+				type: 'number',
+				default: '',
+				description: 'Effective date of the SLA. ' +
+					'Possible values: date timestamp in UTC.',
+			},
+			{
+				displayName: 'Timezone',
+				name: 'timezone',
+				type: 'string',
+				default: '',
+				description: 'Reporting time zone, for example: Europe/London, UTC. ' +
+					'For the full list of supported time zones please refer to PHP documentation.',
+			},
+			{
+				displayName: 'Status',
+				name: 'status',
+				type: 'options',
+				default: 0,
+				description: 'Status of the SLA.',
+				options: [
+					{
+						name: '0 - (default) disabled SLA',
+						value: 0,
+					},
+					{
+						name: '1 - enabled SLA',
+						value: 1,
+					},
+				]
+			},
+			{
+				displayName: 'Description',
+				name: 'description',
+				type: 'string',
+				default: '',
+				description: 'Description of the SLA',
+			},
+			{
+				displayName: 'Service Tags',
+				name: 'service_tags',
+				type: 'fixedCollection',
+				default: '',
+				description: 'Return a service_tags property with SLA service tags',
+				options: [
+					{
+						name: 'metadataValues',
+						displayName: 'Metadata',
+						values: [
+							{
+								displayName: 'Tag',
+								name: 'tag',
+								type: 'string',
+								default: '',
+								description: 'SLA service tag name',
+							},
+							{
+								displayName: 'Operator',
+								name: 'operator',
+								type: 'options',
+								default: 0,
+								description: 'SLA service tag operator',
+								typeOptions: [
+									{
+										name: '0 - (default) equals',
+										value: 0,
+									},
+									{
+										name: '2 - like',
+										value: 2,
+									},
+								],
+							},
+							{
+								displayName: 'Value',
+								name: 'value',
+								type: 'string',
+								default: '',
+								description: 'SLA service tag value',
+							},
+						],
+					},
+				],
+			},
+			{
+				displayName: 'Schedule',
+				name: 'schedule',
+				type: 'fixedCollection',
+				default: '',
+				description: 'SLA schedule to replace the current one. Specifying parameter as empty will be interpreted as a 24x7 schedule.',
+				options: [
+					{
+						name: 'metadataValues',
+						displayName: 'Metadata',
+						values: [
+							{
+								displayName: 'Period From',
+								name: 'period_from',
+								type: 'number',
+								default: '',
+								description: 'Starting time of the recurrent weekly period of time (inclusive).\n' +
+									'Possible values: number of seconds (counting from Sunday).',
+							},
+							{
+								displayName: 'Period To',
+								name: 'period_to',
+								type: 'number',
+								default: '',
+								description: 'Ending time of the recurrent weekly period of time (exclusive).\n' +
+									'Possible values: number of seconds (counting from Sunday).',
+							},
+						],
+					},
+				],
+			},
+			{
+				displayName: 'Excluded Downtimes',
+				name: 'excluded_downtimes',
+				type: 'fixedCollection',
+				default: '',
+				description: 'SLA excluded downtimes to replace the current ones.',
+				options: [
+					{
+						name: 'metadataValues',
+						displayName: 'Metadata',
+						values: [
+							{
+								displayName: 'Name',
+								name: 'name',
+								type: 'string',
+								default: '',
+								description: 'Name of the excluded downtime',
+							},
+							{
+								displayName: 'Period From',
+								name: 'period_from',
+								type: 'number',
+								default: '',
+								description: 'Starting time of the excluded downtime (inclusive).' +
+									'Possible values: timestamp.',
+							},
+							{
+								displayName: 'Period To',
+								name: 'period_to',
+								type: 'number',
+								default: '',
+								description: 'Ending time of the excluded downtime (exclusive).' +
+									'Possible values: timestamp.',
+							},
+						],
+					},
+				],
+			},
+
 		],
 	},
 

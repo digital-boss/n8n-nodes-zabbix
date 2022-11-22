@@ -596,6 +596,50 @@ export class Zabbix implements INodeType {
 								}
 								break;
 
+
+							case 'update':
+								// ----------------------------------------
+								//             host: update
+								// ----------------------------------------
+								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/host/update
+
+								method = 'host.update';
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+								if (jsonParameters) {
+									const parametersJson = this.getNodeParameter('parametersJson', i);
+
+									if (parametersJson instanceof Object) {
+										// if it is an object
+										params = parametersJson as IDataObject;
+									} else {
+										// if it is a string
+										if (validateJSON(parametersJson as string) !== undefined) {
+											params = JSON.parse(parametersJson as string) as IDataObject;
+										} else {
+											throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+										}
+									}
+
+								} else {
+									params = this.getNodeParameter('parametersUi', i) as IDataObject;
+									params.hostid = this.getNodeParameter('hostid', i) as string;
+
+									// if (params.groups) {
+									// 	params.groups = (params.groups as IDataObject).metadataValues;
+									// }
+									// if (params.interfaces) {
+									// 	params.interfaces = (params.interfaces as IDataObject).metadataValues;
+									// }
+									if (params.tags) {
+										params.tags = (params.tags as IDataObject).metadataValues;
+									}
+									if (params.macros) {
+										params.macros = (params.macros as IDataObject).metadataValues;
+									}
+								}
+								break;
+
 							default: {
 								throw new NodeOperationError(this.getNode(), `The operation "${operation}" is not supported for resource "${resource}"!`);
 							}
@@ -1066,6 +1110,46 @@ export class Zabbix implements INodeType {
 									if (params.serviceids) {
 										// type - array/string
 										params.serviceids = (params.serviceids as IDataObject[]).map(a => a.id);
+									}
+								}
+								break;
+
+							case 'update':
+								// ----------------------------------------
+								//             sla: update
+								// ----------------------------------------
+								// https://www.zabbix.com/documentation/5.0/en/manual/api/reference/sla/update
+
+								method = 'sla.update';
+								jsonParameters = this.getNodeParameter('jsonParameters', i) as boolean;
+
+								if (jsonParameters) {
+									const parametersJson = this.getNodeParameter('parametersJson', i);
+
+									if (parametersJson instanceof Object) {
+										// if it is an object
+										params = parametersJson as IDataObject;
+									} else {
+										// if it is a string
+										if (validateJSON(parametersJson as string) !== undefined) {
+											params = JSON.parse(parametersJson as string) as IDataObject;
+										} else {
+											throw new NodeOperationError(this.getNode(), 'Parameters JSON must be a valid json');
+										}
+									}
+
+								} else {
+									params = this.getNodeParameter('parametersUi', i) as IDataObject;
+									params.slaid = this.getNodeParameter('slaid', i) as string;
+
+									if (params.service_tags) {
+										params.service_tags = (params.service_tags as IDataObject).metadataValues;
+									}
+									if (params.schedule) {
+										params.schedule = (params.schedule as IDataObject).metadataValues;
+									}
+									if (params.excluded_downtimes) {
+										params.excluded_downtimes = (params.excluded_downtimes as IDataObject).metadataValues;
 									}
 								}
 								break;
