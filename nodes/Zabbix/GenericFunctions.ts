@@ -95,6 +95,7 @@ function getOptions(method: string, params: IDataObject, credentials: IDataObjec
 			auth: token,
 		},
 		uri: uri || credentials.url + '/api_jsonrpc.php',
+		rejectUnauthorized: !credentials.allowUnauthorizedCerts,
 		json: true,
 	};
 

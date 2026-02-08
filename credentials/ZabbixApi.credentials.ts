@@ -31,6 +31,12 @@ export class ZabbixApi implements ICredentialType {
 			default: '',
 		},
 		{
+			displayName: 'Ignore SSL Issues (Insecure)',
+			name: 'allowUnauthorizedCerts',
+			type: 'boolean',
+			default: false,
+		},
+		{
 			displayName: 'Testing Mode',
 			name: 'testingMode',
 			type: 'boolean',
